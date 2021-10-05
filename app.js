@@ -89,8 +89,19 @@ methodOverride = require('method-override'),
                 }else {
                     res.redirect('/blogs/' + req.params.id);
             }
-        })
-    })
+        });
+    });
+    // delete route
+    app.delete('/blogs/:id', (req, res)=> {
+        Blog.findByIdAndDelete(req.params.id, (err)=> {
+            if(err) {
+                //   console.log(err);
+                    res.redirect('/blogs');
+                }else {
+                    res.redirect('/blogs');
+            }
+        });
+    });
 
     app.listen(3001, ()=> {
         console.log('server running');
