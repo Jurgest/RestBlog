@@ -1,14 +1,19 @@
-var bodyParser = require('body-parser'),
-methodOverride = require('method-override'),
-    mongoose   = require('mongoose'),
-    express    = require('express'),
-    app        = express();
+const expressSanitizer = require('express-sanitizer');
+
+var bodyParser   = require('body-parser'),
+methodOverride   = require('method-override'),
+axpressSanitizer = require('express-sanitizer'),
+    mongoose     = require('mongoose'),
+    express      = require('express'),
+    app          = express();
     //APP CONFIG
     mongoose.connect('mongodb+srv://Jurgest:saadmin@cluster0.bdfsr.mongodb.net/RESTBLOG?retryWrites=true&w=majority');
     app.set('view engine', 'ejs');
     app.use(express.static('public'));
     app.use(bodyParser.urlencoded({extended: true}));
+    app.use(expressSanitizer());
     app.use(methodOverride('_method'));
+
 
     //MONGOOSE MODEL CONFIG
     var blogSchema = new mongoose.Schema({
@@ -49,6 +54,7 @@ methodOverride = require('method-override'),
     // create route
     app.post('/blogs', (req, res) => {
         // create blog and redirect
+        req.body.blog.body = req.sanitize(req.body.blog.body);
         Blog.create(req.body.blog, (err, newBlog)=>{
             if(err) {
                 res.render('new');
@@ -82,6 +88,7 @@ methodOverride = require('method-override'),
     });
     // Update route
     app.put('/blogs/:id', (req, res)=> {
+        req.body.blog.body = req.sanitize(req.body.blog.body);
         Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatetBlog)=> {
             if(err) {
                 //   console.log(err);
